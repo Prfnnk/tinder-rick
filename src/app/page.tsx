@@ -45,7 +45,7 @@ const CHARACTERS = gql`
 `;
 
 export default function Home() {
-  const { data, loading, error } = useQuery<Characters>(CHARACTERS, {
+  const { data, loading, error, fetchMore } = useQuery<Characters>(CHARACTERS, {
     variables: {
       page: 1,
     },
@@ -54,9 +54,9 @@ export default function Home() {
   const [cards, setCards] = useState([]);
   const [ok, setOk] = useState(false);
   // const [refetch, setRefetch] = useState(false);
-  const [isInteracting, setIsInteracting] = useState(false);
+  // const [isInteracting, setIsInteracting] = useState(false);
   const [id, setId] = useState(null);
-  const [favourites, setFavourites] = useState(0);
+  // const [favourites, setFavourites] = useState(0);
   const results = data?.characters?.results;
   const isEmpty = cards.length === 0;
 
@@ -65,10 +65,10 @@ export default function Home() {
       setCards(results);
       setId(results[0].id);
       setOk(true);
-      const favArr = localStorage.getItem('favourites')
-        ? JSON.parse(localStorage.getItem('favourites'))
-        : [];
-      setFavourites(favArr.length);
+      // const favArr = localStorage.getItem('favourites')
+      //   ? JSON.parse(localStorage.getItem('favourites'))
+      //   : [];
+      // setFavourites(favArr.length);
     }
   }, [results]);
 
@@ -91,7 +91,7 @@ export default function Home() {
     favouritesArr.push(id);
 
     localStorage.setItem('favourites', JSON.stringify([...favouritesArr]));
-    setFavourites(favouritesArr.length);
+    // setFavourites(favouritesArr.length);
     console.log('favourites', favouritesArr);
     removeCard();
   };
@@ -106,39 +106,48 @@ export default function Home() {
     }
   };
 
+  const handleLoadMore = () => {
+    fetchMore({
+      variables: {
+        page: 2,
+      },
+    })
+      .then((res) => {
+        console.log('res', res);
+        setCards([...res.data.characters.results]);
+      })
+      .catch((err) => {
+        console.log('err', err);
+      });
+  };
+
   if (loading) {
     return <div>loading.....</div>;
   }
   if (error) return <p>Error :(</p>;
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <header className="flex justify-between w-full">
-        <p>restart</p>
-        <p>liked ({favourites})</p>
-        <p>matched</p>
-      </header>
-      <main className="w-full h-full flex flex-col justify-center items-center">
-        <div className="content w-full h-full">
-          {!isEmpty && ok && (
-            <>
-              <div className="content__cards relative w-full h-full">
-                {cards &&
-                  cards
-                    .map((character) => (
-                      <Card
-                        isInteracting={isInteracting}
-                        key={character?.id}
-                        characterData={character}
-                      />
-                    ))
-                    .reverse()}
-              </div>
-              <Buttons interactCard={interactCard} />
-            </>
-          )}
-          {isEmpty && ok && <div>Load more?</div>}
-        </div>
-      </main>
-    </div>
+    <main className="main w-full h-full flex flex-col justify-center items-center">
+      <div className="content w-full h-full">
+        {!isEmpty && ok && (
+          <>
+            <div className="content__cards relative w-full h-[50vh]">
+              {cards &&
+                cards
+                  .map((character) => (
+                    <Card key={character?.id} characterData={character} />
+                  ))
+                  .reverse()}
+            </div>
+            <Buttons interactCard={interactCard} />
+          </>
+        )}
+        {isEmpty && ok && (
+          <div>
+            <p>This is it! Load more?</p>
+            <button onClick={() => handleLoadMore()}>Yes, please!</button>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
