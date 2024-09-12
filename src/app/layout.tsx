@@ -39,7 +39,7 @@ export default function RootLayout({
 }>) {
   const [favourites, setFavourites] = useState(0);
   useEffect(() => {
-    //TODO: make it global + add anim + add load more and pages layout
+    //TODO: make it global + remove match + refactor hooks and logic
     const favArr = localStorage.getItem('favourites')
       ? JSON.parse(localStorage.getItem('favourites'))
       : [];
@@ -50,7 +50,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="wrapper min-h-screen w-full h-screen p-8 gap-16 sm:p-10">
+        <div className="wrapper min-h-screen w-full p-8 gap-16 sm:p-10">
           <header className="flex justify-between w-full mb-10">
             <Link href="/">Home</Link>
             <Link href="/liked">Liked ({favourites})</Link>

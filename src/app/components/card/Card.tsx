@@ -3,6 +3,7 @@ import Image from 'next/image';
 const Card = ({
   characterData,
   animDirection,
+  isStatic = false,
 }: {
   characterData: {
     image: string;
@@ -11,10 +12,14 @@ const Card = ({
     location: { name: string };
   };
   animDirection?: string;
+  isStatic?: boolean;
 }): JSX.Element => {
+  const positionClass = isStatic
+    ? 'relative'
+    : 'absolute left-[calc(50%_-_10rem)] top-0 z-10 last-of-type:shadow-md';
   return (
     <div
-      className={`${animDirection} transition-all card z-10 absolute left-[calc(50%_-_10rem)] top-0 w-80 h-[50vh] border flex rounded-2xl last-of-type:shadow-md`}
+      className={`${animDirection} ${positionClass} transition card w-80 h-96 border flex rounded-2xl`}
     >
       <div className="card__image rounded-2xl overflow-hidden absolute inset-0 bg-slate-200">
         <Image
@@ -33,7 +38,7 @@ const Card = ({
             {characterData?.species}
           </span>
         </p>
-        <p className="card__location mt-3">{characterData?.location.name}</p>
+        <p className="card__location mt-3">{characterData?.location?.name}</p>
       </div>
     </div>
   );

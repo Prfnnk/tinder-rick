@@ -1,48 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 import Card from '../app/components/card/Card';
 import Buttons from '../app/components/buttons/Buttons';
 
 import { Characters } from './gql/queries/types/Characters';
-
-const CHARACTERS = gql`
-  query Characters(
-    $page: Int
-    $name: String
-    $gender: String
-    $species: String
-    $status: String
-  ) {
-    characters(
-      page: $page
-      filter: {
-        name: $name
-        gender: $gender
-        species: $species
-        status: $status
-      }
-    ) {
-      info {
-        count
-        pages
-        next
-      }
-      results {
-        id
-        name
-        species
-        status
-        location {
-          name
-        }
-        image
-      }
-    }
-  }
-`;
+import { CHARACTERS } from './gql/queries/Character.query';
 
 export default function Home() {
   const { data, loading, error, fetchMore } = useQuery<Characters>(CHARACTERS, {
