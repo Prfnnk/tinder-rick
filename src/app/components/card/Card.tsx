@@ -1,8 +1,21 @@
 import Image from 'next/image';
 
-const Card = ({ characterData }) => {
+const Card = ({
+  characterData,
+  animDirection,
+}: {
+  characterData: {
+    image: string;
+    name: string;
+    species: string;
+    location: { name: string };
+  };
+  animDirection?: string;
+}): JSX.Element => {
   return (
-    <div className="card absolute left-[calc(50%_-_10rem)] top-0 w-80 h-[50vh] border flex rounded-2xl last-of-type:shadow-md">
+    <div
+      className={`${animDirection} transition-all card z-10 absolute left-[calc(50%_-_10rem)] top-0 w-80 h-[50vh] border flex rounded-2xl last-of-type:shadow-md`}
+    >
       <div className="card__image rounded-2xl overflow-hidden absolute inset-0 bg-slate-200">
         <Image
           width={400}

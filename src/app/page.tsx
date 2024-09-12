@@ -54,7 +54,7 @@ export default function Home() {
   const [cards, setCards] = useState([]);
   const [ok, setOk] = useState(false);
   // const [refetch, setRefetch] = useState(false);
-  // const [isInteracting, setIsInteracting] = useState(false);
+  const [animDirection, setAnimDirection] = useState('');
   const [id, setId] = useState(null);
   // const [favourites, setFavourites] = useState(0);
   const results = data?.characters?.results;
@@ -92,17 +92,22 @@ export default function Home() {
 
     localStorage.setItem('favourites', JSON.stringify([...favouritesArr]));
     // setFavourites(favouritesArr.length);
-    console.log('favourites', favouritesArr);
     removeCard();
   };
 
   const interactCard = (type: 'skip' | 'like'): void => {
     if (type === 'skip') {
-      removeCard();
-      console.log('skip');
+      setAnimDirection('-translate-x-10 opacity-0');
+      setTimeout(() => {
+        removeCard();
+        setAnimDirection('');
+      }, 500);
     } else {
-      console.log('like');
-      addToFavourites();
+      setAnimDirection('translate-x-10 opacity-0');
+      setTimeout(() => {
+        addToFavourites();
+        setAnimDirection('');
+      }, 500);
     }
   };
 
@@ -122,19 +127,27 @@ export default function Home() {
   };
 
   if (loading) {
-    return <div>loading.....</div>;
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        loading.....
+      </div>
+    );
   }
   if (error) return <p>Error :(</p>;
   return (
     <main className="main w-full h-full flex flex-col justify-center items-center">
-      <div className="content w-full h-full">
+      <div className="content">
         {!isEmpty && ok && (
           <>
             <div className="content__cards relative w-full h-[50vh]">
               {cards &&
                 cards
                   .map((character) => (
-                    <Card key={character?.id} characterData={character} />
+                    <Card
+                      key={character?.id}
+                      characterData={character}
+                      animDirection={character?.id === id ? animDirection : ''}
+                    />
                   ))
                   .reverse()}
             </div>
