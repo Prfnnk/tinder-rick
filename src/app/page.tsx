@@ -116,12 +116,6 @@ export default function Home() {
           <Buttons interactCard={interactCard} />
         </>
       )}
-      <button
-        className="border bg-slate-300 py-2 px-4 rounded-lg"
-        onClick={() => handleLoadMore()}
-      >
-        Yes, please!
-      </button>
       {isEmpty && ok && (
         <div className="h-[50vh] flex flex-col justify-center items-center gap-4">
           <p>This is it! Load more?</p>
