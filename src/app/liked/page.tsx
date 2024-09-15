@@ -42,6 +42,8 @@ export default function Page() {
       </div>
     );
   }
+  if (characters.length === 0) return <p>There is liked characters yet.</p>;
+
   if (error) return <p>Error :(</p>;
   return (
     <div className="liked">
