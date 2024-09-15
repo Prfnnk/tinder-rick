@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 
+import { randomPage } from './utils/randomPage';
+
 import Buttons from '../app/components/buttons/Buttons';
 import Loading from './components/loading/Loading';
 import CardsCommon from './components/cards-common/CardsCommon';
@@ -13,10 +15,9 @@ import { Characters } from './gql/queries/types/Characters';
 import { CHARACTERS } from './gql/queries/Character.query';
 
 export default function Home() {
-  let pageToLoad = 1;
   const { data, loading, error, fetchMore } = useQuery<Characters>(CHARACTERS, {
     variables: {
-      page: pageToLoad,
+      page: randomPage,
     },
     errorPolicy: 'all',
   });
@@ -29,6 +30,7 @@ export default function Home() {
     if (results) {
       setId(results[0].id);
     }
+    console.log('mounted');
   }, [results]);
 
   useEffect(() => {
@@ -53,6 +55,7 @@ export default function Home() {
   };
 
   const interactCard = (type: 'skip' | 'like'): void => {
+    console.log('type', type);
     if (type === 'skip') {
       setAnimDirection('-translate-x-10 opacity-0');
       setTimeout(() => {
@@ -68,11 +71,11 @@ export default function Home() {
     }
   };
 
+  const nextRandomPage = data?.characters?.info?.next;
   const handleLoadMore = () => {
-    pageToLoad += 1;
     fetchMore({
       variables: {
-        page: pageToLoad,
+        page: nextRandomPage,
       },
     })
       .then((res) => {
