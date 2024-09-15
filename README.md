@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+This project is a so-called Tinder clone with the characters of Rick and Morty series. You can 'like' or 'toss' the charaacter card. Then visit the "Liked" page to see the chtacthers you found nice.
+
+## Stack used
+
+- React
+- Next
+- Typescript
+- Apollo GraphQL
+- Tailwind CSS
+
 ## Getting Started
 
 First, run the development server:
