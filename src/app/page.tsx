@@ -5,6 +5,7 @@ import { useQuery } from '@apollo/client';
 
 import Card from '../app/components/card/Card';
 import Buttons from '../app/components/buttons/Buttons';
+import Loading from './components/loading/Loading';
 
 import { Characters } from './gql/queries/types/Characters';
 import { CHARACTERS } from './gql/queries/Character.query';
@@ -85,40 +86,39 @@ export default function Home() {
   };
 
   if (loading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        loading.....
-      </div>
-    );
+    return <Loading />;
   }
   if (error) return <p>Error :(</p>;
   return (
-    <main className="main w-full h-full flex flex-col justify-center items-center">
-      <div className="content">
-        {!isEmpty && ok && (
-          <>
-            <div className="content__cards relative w-full h-[50vh]">
-              {cards &&
-                cards
-                  .map((character) => (
-                    <Card
-                      key={character?.id}
-                      characterData={character}
-                      animDirection={character?.id === id ? animDirection : ''}
-                    />
-                  ))
-                  .reverse()}
-            </div>
-            <Buttons interactCard={interactCard} />
-          </>
-        )}
-        {isEmpty && ok && (
-          <div>
-            <p>This is it! Load more?</p>
-            <button onClick={() => handleLoadMore()}>Yes, please!</button>
+    <div className="content w-full h-full">
+      {!isEmpty && ok && (
+        <>
+          <div className="content__cards relative w-full h-[50vh]">
+            {cards &&
+              cards
+                .map((character) => (
+                  <Card
+                    key={character?.id}
+                    characterData={character}
+                    animDirection={character?.id === id ? animDirection : ''}
+                  />
+                ))
+                .reverse()}
           </div>
-        )}
-      </div>
-    </main>
+          <Buttons interactCard={interactCard} />
+        </>
+      )}
+      {isEmpty && ok && (
+        <div className="h-[50vh] flex flex-col justify-center items-center gap-4">
+          <p>This is it! Load more?</p>
+          <button
+            className="border bg-slate-300 py-2 px-4 rounded-lg"
+            onClick={() => handleLoadMore()}
+          >
+            Yes, please!
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

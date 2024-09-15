@@ -30,10 +30,22 @@ export default function RootLayout({
       >
         <div className="wrapper min-h-screen w-full p-8 gap-16 sm:p-10">
           <header className="flex justify-between w-full mb-10">
-            <Link href="/">Home</Link>
-            <Link href="/liked">Liked</Link>
+            <Link
+              className="border-b border-b-transparent hover:border-b-slate-300 transition-colors"
+              href="/"
+            >
+              Home
+            </Link>
+            <Link
+              className="border-b border-b-transparent hover:border-b-pink-300 transition-colors"
+              href="/liked"
+            >
+              Liked
+            </Link>
           </header>
-          <ApolloWrapper>{children}</ApolloWrapper>
+          <main className="main w-full h-full flex flex-col justify-center items-center">
+            <ApolloWrapper>{children}</ApolloWrapper>
+          </main>
         </div>
       </body>
     </html>

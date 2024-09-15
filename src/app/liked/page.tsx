@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/client';
 import { CHARACTERS_BY_ID } from '../gql/queries/CharactersById';
 
 import Card from '../components/card/Card';
+import Loading from '../components/loading/Loading';
 
 export default function Page() {
   const [characters, setCharacters] = useState([]);
@@ -36,18 +37,16 @@ export default function Page() {
   }, [results]);
 
   if (loading) {
-    return (
-      <div className="w-full h-full flex justify-center items-center">
-        loading.....
-      </div>
-    );
+    return <Loading />;
   }
-  if (characters.length === 0) return <p>There is liked characters yet.</p>;
+  if (characters.length === 0) return <p>There is no liked characters yet.</p>;
 
   if (error) return <p>Error :(</p>;
   return (
     <div className="liked">
-      <p className="text-center mb-5">{characters.length}</p>
+      <p className="text-center mb-5">
+        Total liked characters: {characters.length}
+      </p>
       <div className="content relative w-full h-full flex flex-wrap gap-4 justify-center">
         {cards &&
           ok &&
