@@ -1,4 +1,8 @@
-const Buttons = ({ interactCard }) => {
+type ButtonsProps = {
+  interactCard: (action: 'skip' | 'like') => void;
+};
+
+const Buttons = ({ interactCard }: ButtonsProps) => {
   return (
     <div className="buttons mt-8 flex gap-x-4 justify-center">
       <button
@@ -16,4 +20,5 @@ const Buttons = ({ interactCard }) => {
     </div>
   );
 };
+
 export default Buttons;

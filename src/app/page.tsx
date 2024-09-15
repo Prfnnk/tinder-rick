@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 
-import Card from '../app/components/card/Card';
 import Buttons from '../app/components/buttons/Buttons';
 import Loading from './components/loading/Loading';
+import CardsCommon from './components/cards-common/CardsCommon';
+
+import { useGetQueryData } from '@/app/hooks/useGetQueryData';
 
 import { Characters } from './gql/queries/types/Characters';
 import { CHARACTERS } from './gql/queries/Character.query';
@@ -18,18 +20,14 @@ export default function Home() {
     },
     errorPolicy: 'all',
   });
-  const [cards, setCards] = useState([]);
-  const [ok, setOk] = useState(false);
+  const results = data?.characters?.results;
+  const { isEmpty, ok, cards, setCards } = useGetQueryData(results);
   const [animDirection, setAnimDirection] = useState('');
   const [id, setId] = useState(null);
-  const results = data?.characters?.results;
-  const isEmpty = cards.length === 0;
 
   useEffect(() => {
     if (results) {
-      setCards(results);
       setId(results[0].id);
-      setOk(true);
     }
   }, [results]);
 
@@ -94,16 +92,7 @@ export default function Home() {
       {!isEmpty && ok && (
         <>
           <div className="content__cards relative w-full h-[50vh]">
-            {cards &&
-              cards
-                .map((character) => (
-                  <Card
-                    key={character?.id}
-                    characterData={character}
-                    animDirection={character?.id === id ? animDirection : ''}
-                  />
-                ))
-                .reverse()}
+            <CardsCommon cards={cards} id={id} animDirection={animDirection} />
           </div>
           <Buttons interactCard={interactCard} />
         </>

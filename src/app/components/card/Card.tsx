@@ -1,10 +1,6 @@
 import Image from 'next/image';
 
-const Card = ({
-  characterData,
-  animDirection,
-  isStatic = false,
-}: {
+interface CardProps {
   characterData: {
     image: string;
     name: string;
@@ -13,10 +9,17 @@ const Card = ({
   };
   animDirection?: string;
   isStatic?: boolean;
-}): JSX.Element => {
+}
+
+const Card = ({
+  characterData,
+  animDirection = '',
+  isStatic = false,
+}: CardProps): JSX.Element => {
   const positionClass = isStatic
     ? 'relative'
     : 'absolute left-[calc(50%_-_10rem)] top-0 z-10 last-of-type:shadow-md';
+
   return (
     <div
       className={`${animDirection} ${positionClass} transition card w-80 h-96 border flex rounded-2xl`}
