@@ -22,16 +22,20 @@ export default function Home() {
     errorPolicy: 'all',
   });
   const results = data?.characters?.results;
+  const nextPage = data?.characters?.info?.next;
   const { isEmpty, ok, cards, setCards } = useGetQueryData(results);
   const [animDirection, setAnimDirection] = useState('');
   const [id, setId] = useState(null);
+  const [refetch, setRefetch] = useState(false);
+  const [isRefetching, setIsRefetching] = useState(false);
+  const [nextRandomPage, setNextRandomPage] = useState(0);
 
   useEffect(() => {
     if (results) {
       setId(results[0].id);
+      setNextRandomPage(nextPage);
     }
-    console.log('mounted');
-  }, [results]);
+  }, [results, nextPage]);
 
   useEffect(() => {
     if (cards && results && ok) {
@@ -40,6 +44,13 @@ export default function Home() {
       }
     }
   }, [cards, results, ok]);
+
+  useEffect(() => {
+    if (cards && cards.length > 0 && refetch) {
+      setId(cards[0]?.id);
+      setRefetch(false);
+    }
+  }, [refetch, cards]);
 
   const removeCard = () => {
     const filtered = cards.filter((item) => item.id !== id);
@@ -55,7 +66,6 @@ export default function Home() {
   };
 
   const interactCard = (type: 'skip' | 'like'): void => {
-    console.log('type', type);
     if (type === 'skip') {
       setAnimDirection('-translate-x-10 opacity-0');
       setTimeout(() => {
@@ -71,22 +81,28 @@ export default function Home() {
     }
   };
 
-  const nextRandomPage = data?.characters?.info?.next;
+  // const nextRandomPage = data?.characters?.info?.next;
   const handleLoadMore = () => {
+    setIsRefetching(true);
     fetchMore({
       variables: {
         page: nextRandomPage,
       },
     })
       .then((res) => {
-        setCards([...res.data.characters.results]);
+        setNextRandomPage(res?.data?.characters?.info?.next);
+        setCards([...res?.data?.characters?.results]);
+        setRefetch(true);
+      })
+      .finally(() => {
+        setIsRefetching(false);
       })
       .catch((err) => {
         console.log('err', err);
       });
   };
 
-  if (loading) {
+  if (loading || isRefetching) {
     return <Loading />;
   }
   if (error) return <p>Error :(</p>;
@@ -100,6 +116,12 @@ export default function Home() {
           <Buttons interactCard={interactCard} />
         </>
       )}
+      <button
+        className="border bg-slate-300 py-2 px-4 rounded-lg"
+        onClick={() => handleLoadMore()}
+      >
+        Yes, please!
+      </button>
       {isEmpty && ok && (
         <div className="h-[50vh] flex flex-col justify-center items-center gap-4">
           <p>This is it! Load more?</p>
