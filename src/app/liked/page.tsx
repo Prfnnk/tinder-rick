@@ -3,39 +3,23 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 
+import { CHARACTERS_BY_ID } from '../gql/queries/CharactersById';
+
 import Card from '../components/card/Card';
-
-// import { Characters } from '../gql/queries/types/Characters';
-// import { CHARACTERS } from '../gql/queries/Character.query';
-
-import { gql } from '@apollo/client';
-
-const CHARACTERS_BY_ID = gql`
-  query CharactersById($ids: [ID!]!) {
-    charactersByIds(ids: $ids) {
-      id
-      name
-      species
-      status
-      location {
-        name
-      }
-      image
-    }
-  }
-`;
 
 export default function Page() {
   const [characters, setCharacters] = useState([]);
   const [cards, setCards] = useState([]);
   const [ok, setOk] = useState(false);
+
   useEffect(() => {
-    //TODO: make it global + add load more and pages layout
     const favArr = localStorage.getItem('favourites')
       ? JSON.parse(localStorage.getItem('favourites'))
       : [];
-    setCharacters(favArr);
+    const favArrUnique = Array.from(new Set(favArr));
+    setCharacters(favArrUnique);
   }, []);
+
   const { data, loading, error } = useQuery(CHARACTERS_BY_ID, {
     variables: {
       ids: [...characters],
@@ -61,6 +45,7 @@ export default function Page() {
   if (error) return <p>Error :(</p>;
   return (
     <div className="liked">
+      <p className="text-center mb-5">{characters.length}</p>
       <div className="content relative w-full h-full flex flex-wrap gap-4 justify-center">
         {cards &&
           ok &&

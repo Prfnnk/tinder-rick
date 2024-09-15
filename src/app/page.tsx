@@ -10,18 +10,17 @@ import { Characters } from './gql/queries/types/Characters';
 import { CHARACTERS } from './gql/queries/Character.query';
 
 export default function Home() {
+  let pageToLoad = 1;
   const { data, loading, error, fetchMore } = useQuery<Characters>(CHARACTERS, {
     variables: {
-      page: 1,
+      page: pageToLoad,
     },
     errorPolicy: 'all',
   });
   const [cards, setCards] = useState([]);
   const [ok, setOk] = useState(false);
-  // const [refetch, setRefetch] = useState(false);
   const [animDirection, setAnimDirection] = useState('');
   const [id, setId] = useState(null);
-  // const [favourites, setFavourites] = useState(0);
   const results = data?.characters?.results;
   const isEmpty = cards.length === 0;
 
@@ -30,10 +29,6 @@ export default function Home() {
       setCards(results);
       setId(results[0].id);
       setOk(true);
-      // const favArr = localStorage.getItem('favourites')
-      //   ? JSON.parse(localStorage.getItem('favourites'))
-      //   : [];
-      // setFavourites(favArr.length);
     }
   }, [results]);
 
@@ -54,9 +49,7 @@ export default function Home() {
     let favouritesArr = [];
     favouritesArr = JSON.parse(localStorage.getItem('favourites')) || [];
     favouritesArr.push(id);
-
     localStorage.setItem('favourites', JSON.stringify([...favouritesArr]));
-    // setFavourites(favouritesArr.length);
     removeCard();
   };
 
@@ -77,13 +70,13 @@ export default function Home() {
   };
 
   const handleLoadMore = () => {
+    pageToLoad += 1;
     fetchMore({
       variables: {
-        page: 2,
+        page: pageToLoad,
       },
     })
       .then((res) => {
-        console.log('res', res);
         setCards([...res.data.characters.results]);
       })
       .catch((err) => {
