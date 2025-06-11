@@ -72,7 +72,61 @@ async function getPRChanges(prNumber, owner, repo) {
   }));
 }
 
+function splitContentIntoBlocks(content, maxLength = 2000) {
+  const blocks = [];
+  let currentBlock = '';
+  
+  // Split content by newlines to preserve formatting
+  const lines = content.split('\n');
+  
+  for (const line of lines) {
+    // If adding this line would exceed the limit, start a new block
+    if (currentBlock.length + line.length + 1 > maxLength) {
+      if (currentBlock) {
+        blocks.push(currentBlock);
+        currentBlock = '';
+      }
+      
+      // If a single line is longer than maxLength, split it into chunks
+      if (line.length > maxLength) {
+        let remainingLine = line;
+        while (remainingLine.length > 0) {
+          blocks.push(remainingLine.slice(0, maxLength));
+          remainingLine = remainingLine.slice(maxLength);
+        }
+        continue;
+      }
+    }
+    
+    // Add the line to current block
+    currentBlock += (currentBlock ? '\n' : '') + line;
+  }
+  
+  // Add the last block if it's not empty
+  if (currentBlock) {
+    blocks.push(currentBlock);
+  }
+  
+  return blocks;
+}
+
 async function createNotionPage(title, content) {
+  const contentBlocks = splitContentIntoBlocks(content);
+  
+  const children = contentBlocks.map(block => ({
+    object: 'block',
+    type: 'paragraph',
+    paragraph: {
+      rich_text: [
+        {
+          text: {
+            content: block,
+          },
+        },
+      ],
+    },
+  }));
+
   const response = await notion.pages.create({
     parent: {
       database_id: process.env.NOTION_DATABASE_ID,
@@ -88,21 +142,7 @@ async function createNotionPage(title, content) {
         ],
       },
     },
-    children: [
-      {
-        object: 'block',
-        type: 'paragraph',
-        paragraph: {
-          rich_text: [
-            {
-              text: {
-                content: content,
-              },
-            },
-          ],
-        },
-      },
-    ],
+    children: children,
   });
 
   return response.url;
