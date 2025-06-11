@@ -117,7 +117,7 @@ async function main() {
     const { productiveLink, previewLink, prDescription } = await extractLinksFromPR(prNumber, owner, repo);
 
     if (!productiveLink || !previewLink) {
-      console.error('Missing required links in PR description');
+      console.error('Missing required links in PR description!!!');
       process.exit(1);
     }
 
