@@ -1,31 +1,28 @@
-name: Generate PR Documentation
+name: Generate Documentation
 
 on:
   pull_request:
     types: [opened, synchronize]
 
 jobs:
-  generate-doc:
+  generate-docs:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository code
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js (or Python)
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '20' # or switch to setup-python if using Python
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
-        # Or: pip install -r requirements.txt for Python
 
-      - name: Run documentation generator
+      - name: Generate documentation
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           PRODUCTIVE_API_KEY: ${{ secrets.PRODUCTIVE_API_KEY }}
-        run: node generate-doc.js
-        # Or: python generate-doc.py
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/generate-docs.js
