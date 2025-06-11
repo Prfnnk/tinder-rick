@@ -22,6 +22,7 @@ jobs:
       - name: Generate documentation
         env:
           PRODUCTIVE_API_KEY: ${{ secrets.PRODUCTIVE_API_KEY }}
+          PRODUCTIVE_ORG_ID: ${{ secrets.PRODUCTIVE_ORG_ID }}
           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

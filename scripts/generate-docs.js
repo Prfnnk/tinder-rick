@@ -27,18 +27,36 @@ async function extractLinksFromPR(prNumber, owner, repo) {
 }
 
 async function getProductiveTaskDescription(productiveLink) {
-  // Extract task ID from the Productive link
-  const taskId = productiveLink.split('/').pop();
-  
-  // Make API call to Productive
-  const response = await axios.get(`https://api.productive.io/api/v2/tasks/${taskId}`, {
-    headers: {
-      'X-Auth-Token': process.env.PRODUCTIVE_API_KEY,
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    // Extract task ID from the Productive link and clean it
+    const taskId = productiveLink.split('/').pop().replace(/[^0-9]/g, '');
+    
+    if (!taskId) {
+      throw new Error('Invalid Productive task ID');
+    }
 
-  return response.data.data.attributes.description;
+    // Make API call to Productive
+    const response = await axios.get(`https://api.productive.io/api/v2/tasks/${taskId}`, {
+      headers: {
+        'X-Auth-Token': process.env.PRODUCTIVE_API_KEY,
+        'Content-Type': 'application/json',
+        'X-Organization-Id': process.env.PRODUCTIVE_ORG_ID // Add organization ID
+      },
+    });
+
+    if (!response.data || !response.data.data || !response.data.data.attributes) {
+      throw new Error('Invalid response from Productive API');
+    }
+
+    return response.data.data.attributes.description || 'No description available';
+  } catch (error) {
+    console.error('Error fetching Productive task:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    return 'Error fetching task description from Productive';
+  }
 }
 
 async function getPRChanges(prNumber, owner, repo) {
